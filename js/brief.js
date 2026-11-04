@@ -200,7 +200,7 @@ const SETTINGS = {
   maxFileSize: 18 * 1024 * 1024,         // размер одного файла
   accept: 'image/*,.heic,.heif,.pdf',    // какие файлы принимаем
   draftKey: 'nikonov-brief-draft-v1',    // ключ черновика в localStorage
-  telegram: 'https://t.me/nikonovphoto', // TODO: заменить на реальный Telegram
+  telegram: 'https://t.me/Nikonovevgeny',
   privacyUrl: ''                         // ссылка на политику обработки данных, когда она появится на сайте
 };
 
