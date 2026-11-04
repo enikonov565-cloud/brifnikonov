@@ -7,9 +7,9 @@
 
 // Адрес приёмника брифов (например, Cloudflare Worker, который пересылает бриф в Telegram).
 // Пока адрес пустой, форма предлагает клиенту скачать или скопировать ответы и прислать их в Telegram.
-// TODO: подключить свой приёмник
+
 window.BRIEF_CONFIG = window.BRIEF_CONFIG || {
-  endpoint: ''
+  endpoint: 'https://aged-salad-01e8.enikonov565.workers.dev/'
 };
 
 /* ---------- ЭТАПЫ ----------
