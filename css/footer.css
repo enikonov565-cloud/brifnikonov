@@ -1,0 +1,138 @@
+/* ---------- ФУТЕР ----------
+   только главное: призыв написать и одна нижняя строка */
+
+.footer {
+	position: relative;
+	padding: calc(var(--pad-y) * 1.5) var(--pad-x) 40px;
+	background: var(--c-dark);
+	color: var(--c-light);
+	overflow: hidden;
+}
+
+/* ---------- призыв ---------- */
+
+.footer__cta {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	align-items: end;
+	column-gap: 40px;
+	padding-bottom: var(--pad-y);
+}
+
+.footer__title {
+	margin: 0;
+	font-family: 'Tupik', sans-serif;
+	font-size: clamp(56px, 7.3vw, 140px);
+	font-weight: 400;
+	line-height: 1.12; /* воздух между строками — крупный TUPIK не слипается */
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	text-wrap: balance;
+}
+
+/* кнопка — с тем же бегущим подчёркиванием, что в шапке */
+.footer__write {
+	position: relative;
+	padding-bottom: 6px;
+	font-size: clamp(18px, 1.25vw, 24px);
+	font-weight: 400;
+	color: var(--c-light);
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.footer__write::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 2px;
+	background: currentColor;
+	transform-origin: 100% 50%;
+}
+
+/* ---------- нижняя строка: © · соцсети · наверх ---------- */
+
+.footer__bottom {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 20px;
+	padding-top: 24px;
+	border-top: 1px solid rgba(235, 235, 235, 0.15);
+	font-size: 14px;
+	color: rgba(235, 235, 235, 0.5);
+}
+
+.footer__social {
+	display: flex;
+	gap: 28px;
+}
+
+.footer__social a,
+.footer__top {
+	color: var(--c-light);
+	text-decoration: none;
+	transition: opacity 0.25s ease;
+}
+
+/* ---------- ховеры ---------- */
+
+@media (hover: hover) {
+	.footer__write:hover::after {
+		animation: underline-run 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+	}
+
+	.footer__social a:hover,
+	.footer__top:hover {
+		opacity: 0.6;
+	}
+}
+
+.footer a:focus-visible {
+	outline: 1px solid var(--c-light);
+	outline-offset: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.footer__write:hover::after {
+		animation: none;
+	}
+}
+
+/* ---------- АДАПТИВ ---------- */
+
+@media (max-width: 1024px) {
+	.footer__cta {
+		grid-template-columns: 1fr;
+		row-gap: 32px;
+	}
+
+	.footer__write {
+		justify-self: start;
+	}
+}
+
+@media (max-width: 767px) {
+	.footer {
+		padding-top: 64px;
+		padding-bottom: 28px;
+	}
+
+	.footer__title {
+		font-size: clamp(44px, 13vw, 64px);
+	}
+
+	/* нижняя строка — столбиком */
+	.footer__bottom {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 14px;
+		font-size: 13px;
+	}
+
+	.footer__social {
+		gap: 20px;
+	}
+}

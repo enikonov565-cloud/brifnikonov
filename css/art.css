@@ -1,0 +1,69 @@
+/* ---------- АРТ-СЛОЙ ----------
+   то, что превращает сайт в галерею: плёночное зерно,
+   «проявка» карточек жанров, выделение текста. Логика — js/art.js */
+
+::selection {
+	background: var(--c-light);
+	color: var(--c-dark);
+}
+
+/* ---------- плёночное зерно ----------
+   статичная текстура поверх всего сайта — как зерно на плёночном отпечатке */
+.grain {
+	position: fixed;
+	z-index: 60;
+	inset: 0;
+	pointer-events: none;
+	opacity: 0.07;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+	background-size: 220px 220px;
+}
+
+/* ---------- «проявка» карточек жанров ----------
+   в покое снимок чёрно-белый в тон сайту; при наведении проявляется цвет и кадр чуть приближается */
+.genres__img[style*="background-image"] {
+	filter: grayscale(1) contrast(1.05);
+	transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.9s ease;
+}
+
+@media (hover: hover) {
+	.genres__card:hover .genres__img[style*="background-image"] {
+		filter: grayscale(0) contrast(1);
+	}
+}
+
+/* ---------- появление при скролле ----------
+   стартовые состояния задаёт js/art.js (GSAP) — без JS всё видно сразу */
+
+/* ---------- ЖЁСТКИЙ ВИЗУАЛ ---------- */
+
+/* строки NIKONOPHOTO — только контур: фон получает ритм «заливка / контур / заливка» */
+.hero__row:nth-child(2),
+.hero__row:nth-child(5) {
+	/* прозрачна только заливка — цвет строки остаётся, чтобы копия в переходе жанра могла его перекрасить */
+	-webkit-text-fill-color: transparent;
+	-webkit-text-stroke: 1.5px rgba(255, 252, 252, 0.4);
+}
+
+/* при перекраске букв в переходе жанра контур берёт цвет слоя */
+.gview__type .hero__row:nth-child(2),
+.gview__type .hero__row:nth-child(5) {
+	-webkit-text-stroke-color: currentColor;
+}
+
+/* портрет второго экрана — жёсткий контраст, глубокие тени */
+.hero__photo {
+	filter: grayscale(1) contrast(1.28) brightness(0.9);
+}
+
+/* карточка жанра — опора для абсолютных элементов */
+.genres__card {
+	position: relative;
+}
+
+@media (max-width: 767px) {
+	.hero__row:nth-child(2),
+	.hero__row:nth-child(5) {
+		-webkit-text-stroke-width: 1px;
+	}
+}

@@ -1,0 +1,401 @@
+@font-face {
+	font-family: 'Tupik';
+	src: url('../fonts/Tupik.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+:root {
+	/* токены из Figma */
+	--c-light: #ebebeb;
+	--c-dark: #0b0f15; /* чёрный с синевой — в него уходит лес через экран-паузу */
+	--c-type: rgba(255, 252, 252, 0.25);
+
+	/* поля: лево/право 60, верх/низ 80 */
+	--pad-x: 60px;
+	--pad-y: 80px;
+
+	/* шапка */
+	/* бургер по размеру = текст ссылки: от верха строчных букв до подчёркивания */
+	--burger-h: calc(var(--contact-size) * 1.1);
+	--burger-w: calc(var(--burger-h) * 1.667); /* пропорции 50×30 из макета */
+	--line: 2px;
+	--logo-w: 170px;
+	--brand-gap: 40px; /* толщина линий бургера и подчёркивания */
+	--contact-size: 20px;
+	--topbar-y: 40px; /* шапка первого экрана выше общего поля 80 */
+}
+
+html,
+body {
+	margin: 0;
+	background: var(--c-dark);
+	color: var(--c-light);
+	font-family: 'Inter', sans-serif;
+	font-weight: 300;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+body {
+	overflow-x: hidden;
+}
+
+img {
+	display: block;
+}
+
+/* ---------- HERO ---------- */
+
+.hero {
+	/* зона стыка с первым экраном: hero заезжает на хвост параллакса
+	   и проявляется из прозрачного — шва нет */
+	--seam: 20vh;
+	--seam: 20svh; /* = .parallax__tail */
+
+	position: relative;
+	z-index: 3;
+	height: 100vh;
+	height: 100svh;
+	min-height: 560px;
+	/* без наезда на предыдущий экран: над галереей с плёнками наезд перекрыл бы нижнюю плёнку */
+	overflow: hidden;
+	background: linear-gradient(to bottom,
+		rgba(11, 15, 21, 0) 0,
+		rgba(11, 15, 21, 0.35) calc(var(--seam) * 0.35),
+		rgba(11, 15, 21, 0.8) calc(var(--seam) * 0.7),
+		var(--c-dark) var(--seam));
+}
+
+/* портрет: в макете 1619×1079 из 1920×1080, прижат влево */
+.hero__photo {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 84.33%;
+	height: 100%;
+	object-fit: cover;
+	object-position: 30% 50%;
+	pointer-events: none;
+	user-select: none;
+	/* верх фото проявляется из первого экрана, низ растворяется в подложку */
+	-webkit-mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, 0.25) calc(var(--seam) * 0.5), #000 calc(var(--seam) * 1.4), #000 72%, transparent 100%);
+	mask-image: linear-gradient(to bottom, transparent 0, rgba(0, 0, 0, 0.25) calc(var(--seam) * 0.5), #000 calc(var(--seam) * 1.4), #000 72%, transparent 100%);
+}
+
+/* кинетическая типографика: 6 строк на всю высоту экрана */
+.hero__type {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	grid-template-rows: repeat(6, 1fr);
+	font-family: 'Tupik', sans-serif;
+	/* 170px в макете 1920 → 8.854vw, но не выше 1/6 экрана */
+	font-size: min(8.854vw, 15.4svh);
+	line-height: 1;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	color: var(--c-type);
+	pointer-events: none;
+	user-select: none;
+}
+
+.hero__row {
+	display: flex;
+	align-items: center;
+	gap: 0.1765em; /* 30px при 170px */
+	white-space: nowrap;
+	will-change: transform;
+}
+
+.hero__row span {
+	flex: none;
+}
+
+/* ---------- ШАПКА ПЕРВОГО ЭКРАНА ---------- */
+
+/* внутри полей 80/60, поверх слоёв параллакса */
+.topbar {
+	position: fixed;
+	z-index: 50;
+	top: var(--topbar-y);
+	left: var(--pad-x);
+	right: var(--pad-x);
+	display: flex;
+	/* по нижней линии: нижняя полоска бургера = подчёркивание ссылки */
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 24px;
+	color: #fff;
+}
+
+/* градиент под шапкой — затемнение «умножением», как в фоторедакторе:
+   фото под шапкой темнеет, но сохраняет свой цвет — без серой пелены полупрозрачной заливки.
+   Два слоя: над лесом — бирюзовый, на чёрно-белых экранах — нейтральный; сменяются плавно */
+.topbar-scrim {
+	position: fixed;
+	z-index: 49; /* сразу под шапкой */
+	top: 0;
+	left: 0;
+	right: 0;
+	height: calc(var(--topbar-y) + var(--burger-h) + 120px);
+	pointer-events: none;
+	mix-blend-mode: multiply;
+}
+
+.topbar-scrim::before,
+.topbar-scrim::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	transition: opacity 0.6s ease;
+}
+
+/* над лесом: тёмный бирюзовый → белый (при умножении белый = без изменений) */
+.topbar-scrim::before {
+	background: linear-gradient(to bottom,
+		rgb(38, 62, 70) 0%,
+		rgb(58, 86, 94) 16%,
+		rgb(92, 120, 128) 32%,
+		rgb(132, 156, 162) 48%,
+		rgb(176, 192, 196) 64%,
+		rgb(214, 224, 226) 80%,
+		rgb(240, 245, 246) 92%,
+		rgb(255, 255, 255) 100%);
+}
+
+/* остальные экраны: холодный тёмно-синий в тон фону сайта */
+.topbar-scrim::after {
+	opacity: 0;
+	background: linear-gradient(to bottom,
+		rgb(52, 60, 74) 0%,
+		rgb(74, 82, 96) 16%,
+		rgb(108, 116, 130) 32%,
+		rgb(148, 155, 167) 48%,
+		rgb(188, 193, 202) 64%,
+		rgb(222, 225, 230) 80%,
+		rgb(244, 245, 247) 92%,
+		rgb(255, 255, 255) 100%);
+}
+
+/* шапка ушла с первого экрана (js/hero.js ставит .is-logo) */
+.topbar.is-logo + .topbar-scrim::before {
+	opacity: 0;
+}
+
+.topbar.is-logo + .topbar-scrim::after {
+	opacity: 1;
+}
+
+.topbar__burger {
+	display: block;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	cursor: pointer;
+	transition: opacity 0.25s ease;
+}
+
+/* логотип в шапке: в 40 от бургера, появляется на втором экране */
+.topbar__brand {
+	display: flex;
+	align-items: flex-end;
+	gap: var(--brand-gap);
+}
+
+/* у PNG большие прозрачные поля — бокс высотой с бургер, подпись центрируется по нему */
+.topbar__logo {
+	position: relative;
+	display: block;
+	width: var(--logo-w);
+	height: var(--burger-h);
+	pointer-events: none;
+}
+
+.topbar__logo img {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	width: 100%;
+	height: auto;
+	transform: translateY(-50%);
+	/* «рисуется» слева направо — как логотип на первом экране */
+	-webkit-mask-image: linear-gradient(90deg, #000 40%, transparent 60%);
+	mask-image: linear-gradient(90deg, #000 40%, transparent 60%);
+	-webkit-mask-size: 250% 100%;
+	mask-size: 250% 100%;
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: 100% 0;
+	mask-position: 100% 0;
+	/* скрытие — быстрее */
+	transition: -webkit-mask-position 0.6s cubic-bezier(0.45, 0.05, 0.25, 1), mask-position 0.6s cubic-bezier(0.45, 0.05, 0.25, 1);
+}
+
+.topbar.is-logo .topbar__logo {
+	pointer-events: auto;
+}
+
+.topbar.is-logo .topbar__logo img {
+	-webkit-mask-position: 0 0;
+	mask-position: 0 0;
+	transition-duration: 1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.topbar__logo img {
+		transition: none;
+	}
+}
+
+/* иконка бургера — тем же цветом, что и текст */
+.topbar__burger-icon {
+	display: block;
+	width: var(--burger-w);
+	height: var(--burger-h);
+	/* три линии как в burger.svg (средняя 60%), толщина = подчёркивание ссылки */
+	background:
+		linear-gradient(currentColor, currentColor) 0 0 / 100% var(--line) no-repeat,
+		linear-gradient(currentColor, currentColor) 0 50% / 60% var(--line) no-repeat,
+		linear-gradient(currentColor, currentColor) 0 100% / 100% var(--line) no-repeat;
+}
+
+/* главная кнопка шапки — белая, читается на градиенте под шапкой */
+.topbar__contact {
+	position: relative;
+	padding-bottom: 5px;
+	font-size: var(--contact-size);
+	font-weight: 400;
+	line-height: normal;
+	color: #fff;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.topbar__contact::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: var(--line);
+	background: currentColor;
+	transform-origin: 100% 50%;
+}
+
+/* бегущее подчёркивание: линия убегает вправо и заново прорисовывается слева */
+@keyframes underline-run {
+	0% {
+		transform: scaleX(1);
+		transform-origin: 100% 50%;
+	}
+	45% {
+		transform: scaleX(0);
+		transform-origin: 100% 50%;
+	}
+	55% {
+		transform: scaleX(0);
+		transform-origin: 0 50%;
+	}
+	100% {
+		transform: scaleX(1);
+		transform-origin: 0 50%;
+	}
+}
+
+@media (hover: hover) {
+	.topbar__burger:hover {
+		opacity: 0.7;
+	}
+
+	.topbar__contact:hover::after {
+		animation: underline-run 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+	}
+}
+
+/* с клавиатуры — тот же эффект */
+.topbar__contact:focus-visible::after {
+	animation: underline-run 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.topbar__contact::after {
+		animation: none !important;
+	}
+}
+
+.topbar__burger:focus-visible,
+.topbar__contact:focus-visible {
+	outline: 1px solid var(--c-light);
+	outline-offset: 6px;
+}
+
+/* ---------- АДАПТИВ ---------- */
+
+/* ноутбуки */
+@media (max-width: 1440px) {
+	:root {
+		--contact-size: 18px;
+	}
+}
+
+/* планшеты */
+@media (max-width: 1024px) {
+	:root {
+		--pad-x: 40px;
+		--pad-y: 48px;
+		--topbar-y: 32px;
+		--contact-size: 16px;
+	}
+}
+
+/* телефоны */
+@media (max-width: 767px) {
+	:root {
+		--pad-x: 20px;
+		--pad-y: 28px;
+		--logo-w: 104px;
+		--brand-gap: 20px;
+		--topbar-y: 20px;
+		--contact-size: 14px;
+	}
+
+	.hero__photo {
+		width: 100%;
+		object-position: 45% 50%;
+	}
+
+	.hero__type {
+		font-size: min(22vw, 15.4svh);
+	}
+}
+
+/* узкие телефоны */
+@media (max-width: 380px) {
+	:root {
+		--logo-w: 88px;
+		--brand-gap: 14px;
+		--contact-size: 13px;
+	}
+}
+
+/* телефон боком: экран низкий */
+@media (max-height: 500px) and (orientation: landscape) {
+	:root {
+		--pad-y: 20px;
+		--topbar-y: 16px;
+	}
+
+	.hero {
+		min-height: 320px;
+	}
+}

@@ -1,0 +1,204 @@
+/* ---------- ВТОРОЙ ЭКРАН: «Я ФОТОГРАФ» ----------
+   плашка с текстом и фото поверх портрета и бегущих строк (.hero в hero.css).
+   Макет 1920×1080: карточки 932 и 768 × 803, между ними 100, сверху 188, снизу 89 */
+
+.about {
+	position: absolute;
+	z-index: 1;
+	top: 17.4%;
+	bottom: 8.3%;
+	left: var(--pad-x);
+	right: var(--pad-x);
+	display: grid;
+	grid-template-columns: minmax(0, 932fr) minmax(0, 768fr);
+	gap: 2.6vw; /* 50 при 1920 — плашка и фото рядом */
+	pointer-events: none;
+}
+
+.about__card,
+.about__photo {
+	min-width: 0;
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+	border-radius: 15px;
+	pointer-events: auto;
+}
+
+/* затемнённая плашка: портрет и строки просвечивают сквозь неё */
+.about__card {
+	/* плашка по ширине текста и прижата к фото — без пустого места между ними */
+	justify-self: end;
+	width: fit-content;
+	max-width: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 32px;
+	padding: clamp(28px, 2.92vw, 56px) clamp(24px, 2.6vw, 50px);
+	/* лёгкое тонированное стекло в тон фону: портрет и строки хорошо видны, текст читается за счёт мягкого размытия */
+	background: linear-gradient(149.6deg, rgba(11, 15, 21, 0.1) 0%, rgba(11, 15, 21, 0.38) 70%);
+	-webkit-backdrop-filter: blur(5px);
+	backdrop-filter: blur(5px);
+	color: var(--c-light);
+}
+
+.about__title {
+	/* не шире текста под ним — иначе длинный заголовок растягивает плашку */
+	max-width: 11.5em;
+	text-wrap: balance;
+	margin: 0;
+	font-size: clamp(32px, 3.333vw, 64px);
+	font-weight: 500;
+	line-height: 1.08; /* чуть больше воздуха между строками */
+	letter-spacing: -0.01em;
+	text-transform: uppercase;
+}
+
+.about__text {
+	max-width: 26em;
+	margin: 0;
+	/* меньше и тоньше: 28 вместо 40 на 1920, Light */
+	font-size: clamp(16px, 1.46vw, 28px);
+	font-weight: 300;
+	line-height: 1.35;
+	letter-spacing: 0;
+	text-wrap: pretty;
+}
+
+/* текст и кнопка под ним — текст поднимается над кнопкой */
+.about__bottom {
+	display: flex;
+	flex-direction: column;
+	gap: clamp(20px, 2.2vw, 42px);
+}
+
+/* кнопки — как «связаться со мной» в шапке: текст с бегущим подчёркиванием */
+.about__link {
+	position: relative;
+	align-self: flex-end;
+	padding-bottom: 5px;
+	font-size: var(--contact-size);
+	font-weight: 400;
+	line-height: normal;
+	color: #fff;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.about__link::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: var(--line);
+	background: currentColor;
+	transform-origin: 100% 50%;
+}
+
+@media (hover: hover) {
+	.about__link:hover::after {
+		animation: underline-run 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+	}
+}
+
+.about__link:focus-visible {
+	outline: 1px solid var(--c-light);
+	outline-offset: 6px;
+}
+
+.about__link:focus-visible::after {
+	animation: underline-run 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.about__link::after {
+		animation: none !important;
+	}
+}
+
+.about__photo {
+	position: relative;
+	background: #a9a9a9;
+}
+
+/* «Мой подход» — в правом нижнем углу фото, с теми же полями, что у плашки */
+.about__link--photo {
+	position: absolute;
+	right: clamp(24px, 2.6vw, 50px);
+	bottom: clamp(28px, 2.92vw, 56px);
+	text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+}
+
+.about__photo img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: 50% 100%;
+}
+
+/* ---------- АДАПТИВ ---------- */
+
+/* планшеты и телефоны: экран растёт по содержимому, карточки друг под другом */
+@media (max-width: 1024px) {
+	.hero:has(.about) {
+		height: auto;
+		min-height: 100svh;
+	}
+
+	.about {
+		position: relative;
+		inset: auto;
+		grid-template-columns: 1fr;
+		gap: 20px;
+		/* место под шапку сверху, снизу — поле */
+		padding: calc(var(--seam) + var(--topbar-y) + 80px) var(--pad-x) var(--pad-y);
+	}
+
+	.about__card,
+	.about__photo {
+		height: auto;
+	}
+
+	.about__card {
+		min-height: 52svh;
+	}
+
+	.about__text {
+		max-width: none;
+		font-size: clamp(16px, 2.6vw, 22px);
+	}
+
+	.about__photo {
+		aspect-ratio: 768 / 803;
+	}
+}
+
+@media (max-width: 767px) {
+	.about__card {
+		min-height: 60svh;
+	}
+
+	.about__title {
+		font-size: 32px;
+	}
+
+	.about__text {
+		font-size: 16px;
+	}
+}
+
+/* телефон боком: плашка и фото рядом — фото не выше экрана и без обрезки головы */
+@media (max-width: 1024px) and (max-height: 500px) and (orientation: landscape) {
+	.about {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	}
+
+	.about__card {
+		min-height: 0;
+		width: auto;
+		justify-self: stretch;
+	}
+}
